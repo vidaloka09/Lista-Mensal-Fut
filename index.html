@@ -1,0 +1,119 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#101827">
+<title>Lista Mensal de Futebol</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#101827;color:#fff;font-family:Arial,sans-serif}
+header{background:#17243a;padding:24px 18px;border-bottom:2px solid #28c76f}
+header h1{font-size:25px;margin:0 0 8px}
+header p{color:#bdc8d8;margin:0}
+main{max-width:650px;margin:auto;padding:18px}
+.card{background:#1b2940;padding:18px;border-radius:14px;margin-bottom:16px}
+h2{font-size:19px;margin:0 0 14px}
+.info{display:flex;justify-content:space-between;gap:10px;margin:12px 0}
+strong.green{color:#38d982}
+label{display:block;margin:12px 0 6px}
+input,select,button{width:100%;padding:13px;border-radius:9px;border:1px solid #43516a;font-size:16px}
+input,select{background:#101827;color:white}
+button{background:#28c76f;color:#102016;font-weight:bold;border:0;margin-top:12px}
+button.secondary{background:#34435b;color:white}
+button.danger{background:#b83d4b;color:white}
+.small{font-size:13px;color:#bac6d7;line-height:1.5}
+.player{padding:12px 0;border-bottom:1px solid #39465c}
+.player:last-child{border-bottom:0}
+.status{color:#38d982;font-size:13px}
+footer{text-align:center;color:#aab6c9;padding:15px;font-size:12px}
+</style>
+</head>
+<body>
+<header>
+<h1>⚽ Lista Mensal de Futebol</h1>
+<p>Organização da pelada • Todos juntos em campo</p>
+</header>
+<main>
+<section class="card">
+<h2>📅 Próximo jogo</h2>
+<div class="info"><span>Dia</span><strong>Segunda-feira</strong></div>
+<div class="info"><span>Horário</span><strong>20:00</strong></div>
+<div class="info"><span>Mensalidade</span><strong class="green">R$ 50,00</strong></div>
+</section>
+
+<section class="card">
+<h2>✅ Confirmar presença</h2>
+<label for="nome">Nome do jogador</label>
+<input id="nome" maxlength="60" placeholder="Digite seu nome">
+<label for="presenca">Você vai jogar?</label>
+<select id="presenca">
+<option value="Sim">Sim, vou jogar</option>
+<option value="Não">Não vou jogar</option>
+</select>
+<button onclick="confirmar()">Enviar confirmação</button>
+<p class="small">Esta versão inicial guarda as respostas somente neste navegador. Ainda não compartilha os dados com outros celulares.</p>
+</section>
+
+<section class="card">
+<h2>👥 Lista de confirmações</h2>
+<div class="info"><span>Respostas neste aparelho</span><strong id="total">0</strong></div>
+<div id="lista"><p class="small">Nenhuma confirmação neste aparelho.</p></div>
+</section>
+
+<section class="card">
+<h2>🔐 Administração</h2>
+<p class="small">O controle protegido de jogadores e mensalidades será ativado depois de configurarmos o banco de dados e o acesso do administrador.</p>
+<div class="info"><span>Mensalidade por jogador</span><strong>R$ 50,00</strong></div>
+<div class="info"><span>Jogo semanal</span><strong>Segunda, 20h</strong></div>
+</section>
+</main>
+<footer>Lista Mensal de Futebol • Versão inicial</footer>
+<script>
+const chave="listaMensalFutebolDemo";
+function ler(){
+ try{return JSON.parse(localStorage.getItem(chave)||"[]")}
+ catch(e){return []}
+}
+function mostrar(){
+ const dados=ler();
+ document.getElementById("total").textContent=dados.length;
+ const lista=document.getElementById("lista");
+ if(!dados.length){
+ lista.innerHTML='<p class="small">Nenhuma confirmação neste aparelho.</p>';
+ return;
+ }
+ lista.innerHTML="";
+ dados.forEach(p=>{
+ const div=document.createElement("div");
+ div.className="player";
+ const nome=document.createElement("strong");
+ nome.textContent=p.nome+" — ";
+ const status=document.createElement("span");
+ status.className="status";
+ status.textContent=p.presenca;
+ div.append(nome,status);
+ lista.appendChild(div);
+ });
+}
+function confirmar(){
+ const nome=document.getElementById("nome").value.trim();
+ const presenca=document.getElementById("presenca").value;
+ if(!nome){alert("Digite seu nome.");return}
+ const dados=ler();
+ const existente=dados.findIndex(p=>p.nome.toLowerCase()===nome.toLowerCase());
+ const jogador={nome,presenca};
+ if(existente>=0) dados[existente]=jogador;
+ else dados.push(jogador);
+ try{
+ localStorage.setItem(chave,JSON.stringify(dados));
+ document.getElementById("nome").value="";
+ mostrar();
+ alert("Resposta salva neste aparelho.");
+ }catch(e){alert("Não foi possível salvar a resposta neste navegador.")}
+}
+mostrar();
+</script>
+</body>
+</html>
